@@ -14,6 +14,8 @@ def main():
     parser.add_argument('-n', '--name', help='Repository name (default: basename of path)', default=None)
     parser.add_argument('--no-gitignore', action='store_true', help='Skip creating .gitignore')
     parser.add_argument('--no-readme', action='store_true', help='Skip creating README.md')
+    parser.add_argument('-P', '--public', action='store_true', help='Make the GitHub repo public')
+    
     
     args = parser.parse_args()
 
@@ -29,14 +31,15 @@ def main():
     os.chdir(path)
 
     run("git init")
-
+    readme = path / "README.md"
+    gitignore = path / ".gitignore"
+    
     if not args.no_readme:
-        readme = path / "README.md"
         if not readme.exists():
             readme.write_text(f"## {repo_name}\nNew repo\n\n---\n")
+            run("git add README.md")
 
     if not args.no_gitignore:
-        gitignore = path / ".gitignore"
         if not gitignore.exists():
             gitignore.write_text("""## default .gitignore
 *.swp
@@ -51,13 +54,14 @@ node_modules/
 dist/
 __pycache__/
 """)
+            run("git add .gitignore")
 
-    run("git add .")
-    run('git commit -m "Initial commit"')
-
-    run(f'gh repo create "{repo_name}" --private --source=. --remote=origin')
+    visibility = "--public" if args.public else "--private"
+    run(f'gh repo create "{repo_name}" {visibility} --source=. --remote=origin')
     current_branch = subprocess.check_output("git symbolic-ref --short HEAD", shell=True, text=True).strip()
-    run(f"git push -u origin {current_branch}")
+    if readme.exists() or gitignore.exists():
+        run('git commit -m "Initial commit"')
+        run(f"git push -u origin {current_branch}")
 
     print(f"Initialized GitHub repo '{username}/{repo_name}' in {path}")
 

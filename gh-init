@@ -60,7 +60,7 @@ __pycache__/
     run(f'gh repo create "{repo_name}" {visibility} --source=. --remote=origin')
     current_branch = subprocess.check_output("git symbolic-ref --short HEAD", shell=True, text=True).strip()
     if readme.exists() or gitignore.exists():
-        run('git commit -m "Initial commit"')
+        run('git commit -m "gh-init"')
         run(f"git push -u origin {current_branch}")
 
     print(f"Initialized GitHub repo '{username}/{repo_name}' in {path}")

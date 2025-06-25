@@ -8,6 +8,19 @@ from pathlib import Path
 def run(cmd, check=True):
     subprocess.run(cmd, shell=True, check=check)
 
+def github_repo_exists(username, repo_name):
+    try:
+        subprocess.run(
+            f"gh repo view {username}/{repo_name}",
+            shell=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=True
+        )
+        return True
+    except subprocess.CalledProcessError:
+        return False
+
 def main():
     parser = argparse.ArgumentParser(description="Initialize a local and remote GitHub repository.")
     parser.add_argument('-p', '--path', help='Local path to initialize (default: current dir)', default=os.getcwd())
@@ -25,6 +38,10 @@ def main():
 
     if not username:
         print("Error: 'github.user' not set in git config.")
+        exit(1)
+
+    if github_repo_exists(username, repo_name):
+        print(f"Error: GitHub repository '{username}/{repo_name}' already exists. Choose a different name.")
         exit(1)
 
     path.mkdir(parents=True, exist_ok=True)

@@ -28,7 +28,8 @@ def main():
     parser.add_argument('--no-gitignore', action='store_true', help='Skip creating .gitignore')
     parser.add_argument('--no-readme', action='store_true', help='Skip creating README.md')
     parser.add_argument('-P', '--public', action='store_true', help='Make the GitHub repo public')
-    
+    parser.add_argument('-d', '--description', help='Short description for the GitHub repo', default="")
+
     
     args = parser.parse_args()
 
@@ -74,7 +75,8 @@ __pycache__/
             run("git add .gitignore")
 
     visibility = "--public" if args.public else "--private"
-    run(f'gh repo create "{repo_name}" {visibility} --source=. --remote=origin')
+    run(f'gh repo create "{repo_name}" {visibility} --description "{args.description}" --source=. --remote=origin')
+
     current_branch = subprocess.check_output("git symbolic-ref --short HEAD", shell=True, text=True).strip()
     if readme.exists() or gitignore.exists():
         run('git commit -m "gh-init"')

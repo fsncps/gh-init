@@ -11,7 +11,7 @@ def run(cmd, check=True):
 def main():
     parser = argparse.ArgumentParser(description="Initialize a local and remote GitHub repository.")
     parser.add_argument('-p', '--path', help='Local path to initialize (default: current dir)', default=os.getcwd())
-    parser.add_argument('-n', '--name', help='Repository name (default: basename of path)', default=None)
+    parser.add_argument('-n', '--name', help='Repository name (default: current dir name)', default=None)
     parser.add_argument('--no-gitignore', action='store_true', help='Skip creating .gitignore')
     parser.add_argument('--no-readme', action='store_true', help='Skip creating README.md')
     parser.add_argument('-P', '--public', action='store_true', help='Make the GitHub repo public')
